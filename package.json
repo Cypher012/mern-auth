@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --exec 'clear && node' index.js"
+    "dev": "nodemon --exec 'clear && node' server/index.js",
+    "start": "node server/index.js"
   },
   "keywords": [],
   "author": "",
