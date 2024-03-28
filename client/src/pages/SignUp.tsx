@@ -1,16 +1,17 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormData, userSchema } from "../schema/userSchema";
+import { SignUpData, signUpSchema } from "../schema/userSchema";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
+  const router = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(userSchema),
+    resolver: zodResolver(signUpSchema),
     defaultValues: {
       username: "",
       email: "",
@@ -18,10 +19,11 @@ const SignUp = () => {
     },
   });
 
-  const onSubmit = async (values: FormData) => {
+  const onSubmit = async (values: SignUpData) => {
     try {
       const res = await axios.post("/api/auth/signUp", values);
       console.log("Data pasted successfully", res.data);
+      router("/");
     } catch (error) {
       console.error("Error posting data", error);
     }
@@ -133,7 +135,7 @@ const SignUp = () => {
           </button>
 
           <p className="text-sm text-center text-gray-500">
-            No account?
+            Already have an account?
             <Link to={"/signIn"} className="text-sky-700 underline">
               Sign In
             </Link>
