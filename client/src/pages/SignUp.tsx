@@ -1,22 +1,41 @@
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormData, userSchema } from "../schema/userSchema";
+import axios from "axios";
+import { Link } from "react-router-dom";
+
 const SignUp = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (values: FormData) => {
+    try {
+      const res = await axios.post("/api/auth/signUp", values);
+      console.log("Data pasted successfully", res.data);
+    } catch (error) {
+      console.error("Error posting data", error);
+    }
+  };
+
   return (
     <div className="px-4 py-5 mx-auto max-w-screen-xl sm:px-6 lg:px-8">
       <div className="mx-auto max-w-lg">
-        <h1 className="text-2xl font-bold text-center text-indigo-600 sm:text-3xl">
-          Get started today
-        </h1>
-
-        <p className="mx-auto mt-4 max-w-md text-center text-gray-500">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati
-          sunt dolores deleniti inventore quaerat mollitia?
-        </p>
-
         <form
-          action="#"
+          onSubmit={handleSubmit(onSubmit)}
           className="p-4 mt-6 mb-0 space-y-4 rounded-lg shadow-lg sm:p-6 lg:p-8"
         >
-          <h2 className="text-4xl font-bold text-center text-slate-600">
-            Sign in
+          <h2 className="text-4xl font-bold text-center uppercase text-slate-600">
+            Sign Up
           </h2>
 
           <div>
@@ -26,12 +45,18 @@ const SignUp = () => {
 
             <div className="relative">
               <input
+                {...register("username")}
                 id="username"
                 type="text"
                 className="p-4 w-full text-sm rounded-lg border-gray-200 shadow-sm pe-12"
                 placeholder="Enter Username"
               />
             </div>
+            {errors.username && (
+              <span className="text-sm text-red-600">
+                {errors.username.message}
+              </span>
+            )}
           </div>
 
           <div>
@@ -41,6 +66,7 @@ const SignUp = () => {
 
             <div className="relative">
               <input
+                {...register("email")}
                 id="email"
                 type="email"
                 className="p-4 w-full text-sm rounded-lg border-gray-200 shadow-sm pe-12"
@@ -64,6 +90,11 @@ const SignUp = () => {
                 </svg>
               </span>
             </div>
+            {errors.email && (
+              <span className="text-sm text-red-600">
+                {errors.email.message}
+              </span>
+            )}
           </div>
 
           <div>
@@ -73,42 +104,26 @@ const SignUp = () => {
 
             <div className="relative">
               <input
+                {...register("password")}
                 id="password"
                 type="password"
                 className="p-4 w-full text-sm rounded-lg border-gray-200 shadow-sm pe-12"
                 placeholder="Enter password"
               />
-
-              <span className="grid absolute inset-y-0 place-content-center px-4 end-0">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-gray-400 size-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-              </span>
             </div>
+            {errors.password && (
+              <span className="text-sm text-red-600">
+                {errors.password.message}
+              </span>
+            )}
           </div>
 
           <button
             type="submit"
-            className="block px-5 py-3 w-full text-sm font-medium text-white bg-indigo-600 rounded-lg"
+            disabled={Object.values(errors).some(Boolean)}
+            className="block px-5 py-3 w-full text-sm font-medium text-white uppercase bg-indigo-600 rounded-lg disabled:bg-gray-500"
           >
-            Sign in
+            Sign Up
           </button>
           <button
             type="submit"
@@ -119,9 +134,9 @@ const SignUp = () => {
 
           <p className="text-sm text-center text-gray-500">
             No account?
-            <a className="underline" href="#">
-              Sign in
-            </a>
+            <Link to={"/signIn"} className="text-sky-700 underline">
+              Sign In
+            </Link>
           </p>
         </form>
       </div>
