@@ -1,8 +1,18 @@
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
+import { useSelector } from "react-redux";
+import { getUsersState } from "../redux/user/userSlice";
 
 const SignIn = () => {
+  const disPatch = useDispatch();
+  const { error } = useSelector(getUsersState);
   const router = useNavigate();
   const { register, handleSubmit } = useForm({
     defaultValues: {
@@ -18,10 +28,13 @@ const SignIn = () => {
 
   const onSubmit = async (values: signInprop) => {
     try {
+      disPatch(signInStart());
       const res = await axios.post("/api/auth/signIn", values);
       console.log("Data pasted successfully", res.data);
+      disPatch(signInSuccess(res));
       router("/");
     } catch (error) {
+      disPatch(signInFailure(error));
       console.error("Error posting data", error);
     }
   };
@@ -97,6 +110,10 @@ const SignIn = () => {
           >
             Continue with Google
           </button>
+
+          <p className="mt-5 text-red-600">
+            {error ? error?.message || "something went wrong" : ""}
+          </p>
 
           <p className="text-sm text-center text-gray-500">
             No account?
